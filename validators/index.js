@@ -1,1 +1,2 @@
-module.exports.userValidators = require('./userValidators')
+module.exports.userValidator = require('./userValidators')
+module.exports.houseValidator = require('./houseValidators')

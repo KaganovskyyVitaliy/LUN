@@ -2,7 +2,7 @@ const { provider } = require('../../database');
 
 module.exports = async (req, res, next) => {
     try {
-        const query = `select * from users`;
+        const query = `select * from user`;
 
         const [AllUsers] = await provider.promise().query(query);
 

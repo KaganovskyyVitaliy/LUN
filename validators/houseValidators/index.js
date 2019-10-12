@@ -1,0 +1,1 @@
+module.exports.NewHouseValidator = require('./newHouse.validator')

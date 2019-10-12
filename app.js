@@ -20,26 +20,24 @@ let { user, house, page } = require('./controllers');
 let { user: userMiddlewares, house: houseMiddlewares } = require('./middleware');
 let { provider } = require('./dataBase')
 
-// staticPages
+//pages
 app.get('/', page.main);
 app.get('/login', page.login);
 app.get('/register', page.register);
 app.get('/newhouse', page.newHouse);
-app.get('/testpage')
-app.all('*', page.page404);
-;
 
 //users
 app.get('/users', userMiddlewares.findAllUsersMiddleware, user.findAll);
 app.get(`/users/:user_id`, userMiddlewares.isUserPresentMiddleware, user.getById);
-app.post('/register', user.createUser);
-app.post('/login', page.login);
+app.post('/register',userMiddlewares.checkUserValidityMiddleware, user.createUser);
+app.post('/login',userMiddlewares.userLoggingMiddleware, user.login);
 
 //houses
-app.post('/newhouse', house.newHouse);
-app.get('/houses', house.findAll);
-app.get(`/houses/:houseID`, house.getById);
+app.post('/newhouse', houseMiddlewares.checkHouseValidityMiddleware, house.newHouse);
+app.get('/houses',houseMiddlewares.findAllHouseMiddleware, house.findAll);
+app.get(`/houses/:house_id`,houseMiddlewares.isHousePresent, house.getById);
 
+app.all('*', page.page404);
 
 app.listen(3000, () => {
     console.log(3000);

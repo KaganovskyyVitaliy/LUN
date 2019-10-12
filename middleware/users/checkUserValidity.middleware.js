@@ -1,10 +1,10 @@
-const {userValidators} = require('../../validators')
+const {userValidator} = require('../../validators')
 
 module.exports =  (req, res, next) =>{
     try {
         const user = req.body
 
-        userValidators.NewUserValidator(user);
+        userValidator.NewUserValidator(user);
 
         next()
     } catch (e) {
