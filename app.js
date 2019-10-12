@@ -4,11 +4,8 @@ const path = require('path');
 
 const app = express();
 
-const users = [];
-const houses = [];
-
 app.use(express.json());
-app.use(express.urlencoded());
+app.use(express.urlencoded({extended: true}));
 
 app.use(express.static(path.join(__dirname, 'static')));
 
@@ -19,57 +16,30 @@ app.engine('.hbs', expHbs({
 app.set('view engine', '.hbs');
 app.set('views', path.join(__dirname, 'static'));
 
-let { user } = require('./controllers');
-let { user: userMiddlewares } = require('./middleware')
+let { user, house, page } = require('./controllers');
+let { user: userMiddlewares, house: houseMiddlewares } = require('./middleware');
+let { provider } = require('./dataBase')
 
-app.get('/', (req, res) => {
-    res.render('main')
-});
+// staticPages
+app.get('/', page.main);
+app.get('/login', page.login);
+app.get('/register', page.register);
+app.get('/newhouse', page.newHouse);
+app.get('/testpage')
+app.all('*', page.page404);
+;
 
-app.get('/login', (req, res) => {
-    res.render('login')
-});
-
-app.get('/register', (req, res) => {
-    res.render('register')
-});
-
-app.get('/newhouse', (req, res) =>{
-    res.render('newhouse')
-});
-
-app.get('/users', user.findAll);
-app.get(`/users/:userID`, userMiddlewares.isUserPresentMiddleware, user.getById);
+//users
+app.get('/users', userMiddlewares.findAllUsersMiddleware, user.findAll);
+app.get(`/users/:user_id`, userMiddlewares.isUserPresentMiddleware, user.getById);
 app.post('/register', user.createUser);
+app.post('/login', page.login);
 
-app.get('/houses', (req, res) => {
-    res.json(houses)
-});
+//houses
+app.post('/newhouse', house.newHouse);
+app.get('/houses', house.findAll);
+app.get(`/houses/:houseID`, house.getById);
 
-app.post('/newhouse', (req, res) => {
-    let house = req.body;
-    house.id = houses.length + 1;
-    houses.push(house);
-    res.render('main')
-});
-
-app.get(`/houses/:houseID`, (req, res) => {
-    const fHouse = houses.find(houses => +req.params.houseID === houses.id);
-    fHouse ? res.json(fHouse) : res.end('House is not found')
-});
-
-app.post('/login', (req,res) => {
-    const {name, password} = req.body;
-    const checkUser = users.find(user =>{
-        return user.name == name && user.password == password
-    });
-    checkUser ? res.json(checkUser) : res.json('User not found');
-
-});
-
-app.all('*', (req, res) => {
-    res.end('ERROR 404')
-});
 
 app.listen(3000, () => {
     console.log(3000);

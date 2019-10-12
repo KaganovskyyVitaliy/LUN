@@ -1,6 +1,8 @@
-module.exports = (req, res) => {
-    let user = req.body;
-    user.id = users.length +1;
-    users.push(user);
-    res.render('login')
+const { provider } = require('../../dataBase');
+
+module.exports = async (req, res) => {
+  const {email, name, password} = req.body;
+  const query = `INSERT INTO user(email, name, password) VALUES(?, ?, ?)`;
+  await provider.promise().query(query, params[email, name, password]);
+    res.render('register')
 }
